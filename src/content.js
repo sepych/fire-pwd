@@ -30,10 +30,10 @@ $(document).ready(function () {
     }
   });
 
-  const container = document.createElement("iframe");
-  container.src = chrome.runtime.getURL('index.html#dialog');
-  container.style.cssText = 'position:fixed;top:0;left:0;z-index:9999999999;';
-  document.body.appendChild(container);
+  // const container = document.createElement("iframe");
+  // container.src = chrome.runtime.getURL('index.html#dialog');
+  // container.style.cssText = 'position:fixed;top:0;left:0;z-index:9999999999;';
+  // document.body.appendChild(container);
 });
 
 

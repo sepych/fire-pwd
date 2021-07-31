@@ -47,11 +47,7 @@ const App = () => {
     }
   } else {
     if (window.location.hash == '#login') {
-      // remove current login tab after user is signed in
-      //TODO return user to previous active tab
-      chrome.tabs.getCurrent(function (tab) {
-        chrome.tabs.remove(tab.id);
-      });
+      //user logged in
       return <div/>;
     } else if(window.location.hash == '#dialog') {
       // for future
