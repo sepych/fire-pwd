@@ -4,6 +4,8 @@ import {config} from "./config";
 
 import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
+import {Landing} from "./views/Landing";
+
 
 firebase.initializeApp(config);
 
@@ -30,10 +32,10 @@ const HelloWorld = () => {
     };
   }, []); // doesn't depends on anything so passing an empty array
 
-  const signIn = () => {
-    chrome.tabs.create({url: "index.html#login"});
-    window.close();
-  }
+  // const signIn = () => {
+  //   chrome.tabs.create({url: "index.html#login"});
+  //   window.close();
+  // }
 
   const signOut = () => {
     firebase.auth().signOut();
@@ -72,7 +74,7 @@ const HelloWorld = () => {
       );
     } else {
       return (
-        <button onClick={signIn}>sign</button>
+        <Landing/>
       );
     }
   }
