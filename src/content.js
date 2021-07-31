@@ -1,23 +1,4 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import $ from 'jquery';
-
-const HelloWorld = () => {
-  const mystyle = {
-    zIndex: 9999,
-    position: 'fixed',
-    top: 0,
-    color: "white",
-    backgroundColor: "DodgerBlue",
-    padding: "10px",
-    fontFamily: "Arial"
-  };
-  return (
-    <h1 style={mystyle}>
-      Hello World
-    </h1>
-  );
-}
 
 $(document).ready(function () {
   const possibleLoginForms = $('input[type=password]').closest('form');
@@ -49,9 +30,10 @@ $(document).ready(function () {
     }
   });
 
-  const container = document.createElement("div");
-  ReactDOM.render(<HelloWorld/>, container);
-  $('body').append(container);
+  const container = document.createElement("iframe");
+  container.src = chrome.runtime.getURL('index.html#dialog');
+  container.style.cssText = 'position:fixed;top:0;left:0;z-index:9999999999;';
+  document.body.appendChild(container);
 });
 
 

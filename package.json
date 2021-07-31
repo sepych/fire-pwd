@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "rm build/* && webpack"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +32,7 @@
     "webpack-encoding-plugin": "^0.3.1"
   },
   "dependencies": {
+    "@material-ui/core": "^4.12.3",
     "firebase": "^8.8.1",
     "jquery": "^3.6.0",
     "react": "^17.0.2",

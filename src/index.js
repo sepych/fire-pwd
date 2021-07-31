@@ -58,6 +58,10 @@ const HelloWorld = () => {
         <button onClick={manualSignIn}>sign</button>
       );
     }
+  } else if(window.location.hash == '#dialog') {
+    return (
+      <h1>Dialog view</h1>
+    );
   } else {
     if (user) {
       return (
