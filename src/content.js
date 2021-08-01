@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     container = document.createElement("iframe");
     container.src = chrome.runtime.getURL('index.html#dialog');
-    container.style.cssText = 'border:none; width:300px; position:fixed; top:0; left:0; z-index:9999999999;';
+    container.style.cssText = 'border:none; width:350px; height: 300px; position:fixed; top:0; left:0; z-index:9999999999;';
     document.body.appendChild(container);
 
     console.log(request)

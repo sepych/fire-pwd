@@ -1,7 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import {config} from "./config";
-import {LOGIN_SUBMIT_EVENT, promptSaveDialog} from "./actions";
+import {LOGIN_SUBMIT_EVENT, promptSaveDialog, SAVE_CREDENTIALS} from "./actions";
 
 let activeTabId = null;
 let extensionTabId = null;
@@ -54,17 +54,6 @@ const onLoginSubmit = ({login, password}) => {
   promptSavePassword = true;
 }
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if(request.action == LOGIN_SUBMIT_EVENT) {
-      onLoginSubmit(request.data);
-    }
-    console.log(sender.tab ?
-      "from a content script:" + sender.tab.url :
-      "from the extension", request);
-  }
-);
-
 firebase.initializeApp(config);
 window.onload = function() {
   firebase.auth().onAuthStateChanged(function(user) {
@@ -76,3 +65,20 @@ window.onload = function() {
     chrome.runtime.sendMessage({context: "user", data: activeUser});
   });
 };
+
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    switch (request.action) {
+      case LOGIN_SUBMIT_EVENT:
+        onLoginSubmit(request.data);
+        break;
+      case SAVE_CREDENTIALS:
+        console.log(SAVE_CREDENTIALS)
+        break;
+      default:
+        console.log(request.action)
+        break;
+    }
+  }
+);

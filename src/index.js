@@ -8,6 +8,7 @@ import {Landing} from "./views/Landing";
 import {TabSignIn} from "./views/TabSignIn";
 import {Main} from "./views/Main";
 import {closeSaveDialog} from "./actions";
+import {SavePasswordDialog} from "./views/SavePasswordDialog";
 
 
 firebase.initializeApp(config);
@@ -51,20 +52,7 @@ const App = () => {
       //user logged in
       return <div/>;
     } else if (window.location.hash == '#dialog') {
-      // for future
-      return (
-        <>
-          <h1>Dialog view</h1>
-          <button onClick={() => {
-            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-              closeSaveDialog(tabs[0].id);
-            });
-          }}
-          >
-            close
-          </button>
-        </>
-      );
+      return <SavePasswordDialog></SavePasswordDialog>;
     } else {
       return <Main user={user}></Main>;
     }
