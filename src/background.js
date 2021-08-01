@@ -1,11 +1,12 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import {config} from "./config";
+import {LOGIN_SUBMIT_EVENT, promptSaveDialog} from "./actions";
 
 let activeTabId = null;
 let extensionTabId = null;
 let activeUser = undefined;
-let onCompleteMessage = null;
+let promptSavePassword = false;
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.log('[background.js] onInstalled', details);
@@ -41,27 +42,21 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo.status == 'complete') {
     console.log(changeInfo)
-    if (onCompleteMessage !== null) {
-      chrome.tabs.sendMessage(tabId, onCompleteMessage);
-      onCompleteMessage = null;
+    if (promptSavePassword) {
+      promptSaveDialog(tabId);
+      promptSavePassword = false;
     }
   }
 })
 
 const onLoginSubmit = ({login, password}) => {
   // console.log(login, password)
-  onCompleteMessage = {
-    action: 'promptSaveDialog',
-    data: {login, password}
-  }
+  promptSavePassword = true;
 }
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.action == 'getUser') {
-      sendResponse({user: activeUser});
-    } else if(request.action == 'loginSubmit') {
-      // login submit received
+    if(request.action == LOGIN_SUBMIT_EVENT) {
       onLoginSubmit(request.data);
     }
     console.log(sender.tab ?

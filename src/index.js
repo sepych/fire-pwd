@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import {Landing} from "./views/Landing";
 import {TabSignIn} from "./views/TabSignIn";
 import {Main} from "./views/Main";
-import {getUser, openAuthPopup} from "./actions";
+import {closeSaveDialog} from "./actions";
 
 
 firebase.initializeApp(config);
@@ -57,9 +57,7 @@ const App = () => {
           <h1>Dialog view</h1>
           <button onClick={() => {
             chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-              chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'closeSaveDialog',
-              });
+              closeSaveDialog(tabs[0].id);
             });
           }}
           >

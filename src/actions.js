@@ -1,10 +1,26 @@
-export const getUser = (callback) => {
-  chrome.runtime.sendMessage({action: "getUser"}, function(response) {
-    callback(response.user);
-    console.log(response);
+
+export const LOGIN_SUBMIT_EVENT = 'loginSubmit';
+export const PROMPT_SAVE_DIALOG = 'promptSaveDialog';
+export const CLOSE_SAVE_DIALOG = 'closeSaveDialog';
+
+export const loginSubmitEvent = (login, password) => {
+  chrome.runtime.sendMessage({
+    action: LOGIN_SUBMIT_EVENT,
+    data: {
+      login: login,
+      password: password
+    }
   });
 }
 
-export const openAuthPopup = () => {
-  chrome.runtime.sendMessage({action: "openAuthPopup"});
+export const promptSaveDialog = (tabId) => {
+  chrome.tabs.sendMessage(tabId, {
+    action: PROMPT_SAVE_DIALOG,
+  });
+}
+
+export const closeSaveDialog = (tabId) => {
+  chrome.tabs.sendMessage(tabId, {
+    action: CLOSE_SAVE_DIALOG,
+  });
 }
