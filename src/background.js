@@ -5,6 +5,7 @@ import {config} from "./config";
 let activeTabId = null;
 let extensionTabId = null;
 let activeUser = undefined;
+let onCompleteMessage = null;
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.log('[background.js] onInstalled', details);
@@ -16,6 +17,10 @@ chrome.runtime.onConnect.addListener((port) => {
 
 chrome.runtime.onStartup.addListener(() => {
   console.log('[background.js] onStartup')
+});
+
+chrome.runtime.onSuspend.addListener(() => {
+  console.log('[background.js] onSuspend')
 });
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
@@ -33,21 +38,32 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   });
 });
 
-/**
- *  Sent to the event page just before it is unloaded.
- *  This gives the extension opportunity to do some clean up.
- *  Note that since the page is unloading,
- *  any asynchronous operations started while handling this event
- *  are not guaranteed to complete.
- *  If more activity for the event page occurs before it gets
- *  unloaded the onSuspendCanceled event will
- *  be sent and the page won't be unloaded. */
-chrome.runtime.onSuspend.addListener(() => {
-  console.log('[background.js] onSuspend')
-});
+chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
+  if (changeInfo.status == 'complete') {
+    console.log(changeInfo)
+    if (onCompleteMessage !== null) {
+      chrome.tabs.sendMessage(tabId, onCompleteMessage);
+      onCompleteMessage = null;
+    }
+  }
+})
+
+const onLoginSubmit = ({login, password}) => {
+  // console.log(login, password)
+  onCompleteMessage = {
+    action: 'promptSaveDialog',
+    data: {login, password}
+  }
+}
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+    if (request.action == 'getUser') {
+      sendResponse({user: activeUser});
+    } else if(request.action == 'loginSubmit') {
+      // login submit received
+      onLoginSubmit(request.data);
+    }
     console.log(sender.tab ?
       "from a content script:" + sender.tab.url :
       "from the extension", request);
@@ -62,5 +78,6 @@ window.onload = function() {
       chrome.tabs.remove(extensionTabId);
     }
     activeUser = user;
+    chrome.runtime.sendMessage({context: "user", data: activeUser});
   });
 };

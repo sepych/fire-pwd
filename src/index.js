@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 import {Landing} from "./views/Landing";
 import {TabSignIn} from "./views/TabSignIn";
 import {Main} from "./views/Main";
+import {getUser, openAuthPopup} from "./actions";
 
 
 firebase.initializeApp(config);
@@ -49,9 +50,23 @@ const App = () => {
     if (window.location.hash == '#login') {
       //user logged in
       return <div/>;
-    } else if(window.location.hash == '#dialog') {
+    } else if (window.location.hash == '#dialog') {
       // for future
-      return <h1>Dialog view</h1>;
+      return (
+        <>
+          <h1>Dialog view</h1>
+          <button onClick={() => {
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+              chrome.tabs.sendMessage(tabs[0].id, {
+                action: 'closeSaveDialog',
+              });
+            });
+          }}
+          >
+            close
+          </button>
+        </>
+      );
     } else {
       return <Main user={user}></Main>;
     }
