@@ -16,15 +16,17 @@ const useStyles = makeStyles({
 export const SavePasswordDialog = () => {
   const classes = useStyles();
 
-  const save = () => {
-    saveCredentials();
-  }
-
   const close = () => {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       closeSaveDialog(tabs[0].id);
     });
   }
+
+  const save = () => {
+    saveCredentials();
+    close();
+  }
+
   return (
     <Card className={classes.root}>
       <CardContent>

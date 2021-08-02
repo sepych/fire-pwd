@@ -1,7 +1,10 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/firestore';
 import {config} from "./config";
 import {LOGIN_SUBMIT_EVENT, promptSaveDialog, SAVE_CREDENTIALS} from "./actions";
+
+import AES from 'crypto-js/aes';
 
 let activeTabId = null;
 let extensionTabId = null;
@@ -26,7 +29,7 @@ chrome.runtime.onSuspend.addListener(() => {
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
   console.log('[background.js] tabs onActivated', activeInfo);
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
     const activeTab = tabs[0];
     console.log(activeTab, chrome.runtime.id)
     if (activeTab.url.length > 0) {
@@ -39,8 +42,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   });
 });
 
-chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
-  if (changeInfo.status == 'complete') {
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
+  if (changeInfo.status === 'complete') {
     console.log(changeInfo)
     if (promptSavePassword) {
       promptSaveDialog(tabId);
@@ -49,16 +52,14 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   }
 })
 
-const onLoginSubmit = ({login, password}) => {
-  // console.log(login, password)
-  promptSavePassword = true;
-}
 
-firebase.initializeApp(config);
-window.onload = function() {
-  firebase.auth().onAuthStateChanged(function(user) {
+const app = firebase.initializeApp(config);
+const db = firebase.firestore(app);
+
+window.onload = function () {
+  firebase.auth().onAuthStateChanged(function (user) {
     if (activeUser === null && user && activeTabId !== null) {
-      chrome.tabs.update(activeTabId, { highlighted: true });
+      chrome.tabs.update(activeTabId, {highlighted: true});
       chrome.tabs.remove(extensionTabId);
     }
     activeUser = user;
@@ -66,15 +67,39 @@ window.onload = function() {
   });
 };
 
+let loginCredentials = null;
+const onLoginSubmit = ({hostname, login, password}) => {
+  console.log(hostname, login, password)
+  loginCredentials = {hostname, login, password};
+  promptSavePassword = true;
+}
+
+const saveCredentials = () => {
+  const passwordRef = db.collection('users').doc(activeUser.uid)
+  .collection('hosts').doc(loginCredentials.hostname).collection('logins')
+  .doc(loginCredentials.login);
+
+  passwordRef.set({
+    hostname: loginCredentials.hostname,
+    login: loginCredentials.login,
+    password: AES.encrypt(loginCredentials.password, 'secret key 123').toString()
+  }).then(() => {
+    console.log("Document successfully written!");
+  })
+  .catch((error) => {
+    console.error("Error writing document: ", error);
+  });
+}
 
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
+  function (request, sender, sendResponse) {
     switch (request.action) {
       case LOGIN_SUBMIT_EVENT:
         onLoginSubmit(request.data);
         break;
       case SAVE_CREDENTIALS:
         console.log(SAVE_CREDENTIALS)
+        saveCredentials();
         break;
       default:
         console.log(request.action)

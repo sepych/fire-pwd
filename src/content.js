@@ -16,8 +16,8 @@ $(document).ready(function () {
         login: logins.first(),
         password: passwords.first()
       }
-      $(this).submit(function (event) {
-        loginSubmitEvent(loginView.login.val(), loginView.password.val());
+      $(this).submit(function () {
+        loginSubmitEvent(window.location.hostname, loginView.login.val(), loginView.password.val());
       });
       loginViews.push(loginView);
     }
@@ -26,7 +26,7 @@ $(document).ready(function () {
 
 let container = null;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action == PROMPT_SAVE_DIALOG) {
+  if (request.action === PROMPT_SAVE_DIALOG) {
     if (container !== null) {
       container.remove();
     }
@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     document.body.appendChild(container);
 
     console.log(request)
-  } else if (request.action == CLOSE_SAVE_DIALOG) {
+  } else if (request.action === CLOSE_SAVE_DIALOG) {
     if (container !== null) {
       container.remove();
     }

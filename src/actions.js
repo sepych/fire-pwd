@@ -4,10 +4,11 @@ export const PROMPT_SAVE_DIALOG = 'promptSaveDialog';
 export const CLOSE_SAVE_DIALOG = 'closeSaveDialog';
 export const SAVE_CREDENTIALS = 'saveCredentials';
 
-export const loginSubmitEvent = (login, password) => {
+export const loginSubmitEvent = (hostname, login, password) => {
   chrome.runtime.sendMessage({
     action: LOGIN_SUBMIT_EVENT,
     data: {
+      hostname: hostname,
       login: login,
       password: password
     }
