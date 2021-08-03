@@ -2,13 +2,22 @@
 export const LOGIN_VIEW = '#login';
 export const SAVE_PASSWORD_VIEW = '#save_password_dialog';
 export const CREDENTIALS_VIEW = '#credentials_dialog';
+export const SavePasswordDialogStyle = {
+  width: '345px',
+  height: '300px',
+  border: 'none',
+  position: 'fixed',
+  top: '8px',
+  left: '8px',
+  'z-index': 9999999999
+};
 export const CredentialsDialogStyle = {
   width: '345px',
   height: '500px',
   border: 'none',
   position: 'fixed',
-  top: 0,
-  left: 0,
+  top: '8px',
+  left: '8px',
   'z-index': 9999999999
 };
 

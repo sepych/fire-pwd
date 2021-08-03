@@ -5,7 +5,7 @@ import {
   pageContainsLoginEvent,
   SHOW_SAVE_DIALOG, SAVE_PASSWORD_VIEW,
   SHOW_CREDENTIALS_DIALOG,
-  CredentialsDialogStyle
+  CredentialsDialogStyle, SavePasswordDialogStyle
 } from "./actions";
 
 
@@ -42,6 +42,10 @@ const removeContainer = () => {
   }
 }
 
+const getTextStyle = (style) => {
+  return Object.entries(style).map(([k, v]) => `${k}:${v}`).join(';');
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('[content.js]', request);
   switch (request.action) {
@@ -52,17 +56,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       removeContainer();
       container = document.createElement("iframe");
       container.src = chrome.runtime.getURL('index.html' + SAVE_PASSWORD_VIEW);
-      container.style.cssText = 'border:none; width:350px; height: 300px; position:fixed; top:0; left:0; z-index:9999999999;';
+      container.style.cssText = getTextStyle(SavePasswordDialogStyle);
       document.body.appendChild(container);
       break;
     case SHOW_CREDENTIALS_DIALOG:
       removeContainer();
       container = document.createElement("iframe");
       container.src = chrome.runtime.getURL('index.html' + CREDENTIALS_VIEW);
-      const styleString = (
-        Object.entries(CredentialsDialogStyle).map(([k, v]) => `${k}:${v}`).join(';')
-      );
-      container.style.cssText = styleString; //'border:none; width:350px; height: 500px; position:fixed; top:0; left:0; z-index:9999999999;';
+      container.style.cssText = getTextStyle(CredentialsDialogStyle);
       document.body.appendChild(container);
       break;
   }
