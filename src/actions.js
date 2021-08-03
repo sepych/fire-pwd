@@ -27,12 +27,19 @@ export const SHOW_CREDENTIALS_DIALOG = 'showCredentialsDialog';
 export const CLOSE_DIALOG = 'closeDialog';
 export const SAVE_CREDENTIALS = 'saveCredentials';
 export const GET_CREDENTIALS = 'getCredentials';
+export const GET_SUBMIT_LOGIN = 'getSubmitLogin';
 export const LOGIN_SUBMIT_EVENT = 'loginSubmit';
 export const PAGE_CONTAINS_LOGIN_EVENT = 'pageContainsLoginEvent';
 
 export const getCredentials = (responseCallback) => {
   chrome.runtime.sendMessage({
     action: GET_CREDENTIALS,
+  }, responseCallback);
+}
+
+export const getSubmitLogin = (responseCallback) => {
+  chrome.runtime.sendMessage({
+    action: GET_SUBMIT_LOGIN,
   }, responseCallback);
 }
 

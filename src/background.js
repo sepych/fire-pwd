@@ -7,7 +7,7 @@ import {
   PAGE_CONTAINS_LOGIN_EVENT,
   showSaveDialog,
   SAVE_CREDENTIALS,
-  GET_CREDENTIALS, showCredentialsDialog
+  GET_CREDENTIALS, showCredentialsDialog, GET_SUBMIT_LOGIN
 } from "./actions";
 
 import AES from 'crypto-js/aes';
@@ -143,6 +143,12 @@ chrome.runtime.onMessage.addListener(
         break;
       case GET_CREDENTIALS:
         sendResponse(currentCredentials.data);
+        break;
+      case GET_SUBMIT_LOGIN:
+        sendResponse({
+          login: loginCredentials.login,
+          password: loginCredentials.password.replace(/./g, '*')
+        })
         break;
     }
   }
