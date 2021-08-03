@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import {Landing} from "./views/Landing";
 import {TabSignIn} from "./views/TabSignIn";
 import {Main} from "./views/Main";
-import {closeSaveDialog} from "./actions";
+import {closeDialog, CREDENTIALS_VIEW, LOGIN_VIEW, SAVE_PASSWORD_VIEW} from "./actions";
 import {SavePasswordDialog} from "./views/SavePasswordDialog";
 
 
@@ -22,7 +22,7 @@ const App = () => {
       setUser(authUser);
     });
 
-    if (window.location.hash == '#login') {
+    if (window.location.hash == LOGIN_VIEW) {
       if (!user) {
         // start login process automatically
         const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
@@ -41,20 +41,22 @@ const App = () => {
       //TODO show loading screen
       return <div/>;
     } else {
-      if (window.location.hash == '#login') {
+      if (window.location.hash === LOGIN_VIEW) {
         return <TabSignIn/>;
       } else {
         return <Landing/>;
       }
     }
   } else {
-    if (window.location.hash == '#login') {
-      //user logged in
-      return <div/>;
-    } else if (window.location.hash == '#dialog') {
-      return <SavePasswordDialog></SavePasswordDialog>;
-    } else {
-      return <Main user={user}></Main>;
+    switch (window.location.hash) {
+      case LOGIN_VIEW: //user logged in
+        return <div/>;
+      case SAVE_PASSWORD_VIEW:
+        return <SavePasswordDialog></SavePasswordDialog>;
+      case CREDENTIALS_VIEW:
+        return <SavePasswordDialog></SavePasswordDialog>;
+      default:
+        return <Main user={user}></Main>;
     }
   }
 }

@@ -2,7 +2,13 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore';
 import {config} from "./config";
-import {LOGIN_SUBMIT_EVENT, PAGE_CONTAINS_LOGIN_EVENT, promptSaveDialog, SAVE_CREDENTIALS} from "./actions";
+import {
+  LOGIN_SUBMIT_EVENT,
+  PAGE_CONTAINS_LOGIN_EVENT,
+  showSaveDialog,
+  SAVE_CREDENTIALS,
+  GET_CREDENTIALS, showCredentialsDialog
+} from "./actions";
 
 import AES from 'crypto-js/aes';
 
@@ -46,7 +52,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
   if (changeInfo.status === 'complete') {
     console.log(changeInfo)
     if (promptSavePassword) {
-      promptSaveDialog(tabId);
+      showSaveDialog(tabId);
       promptSavePassword = false;
     }
   }
@@ -91,7 +97,11 @@ const saveCredentials = () => {
   });
 }
 
+let currentCredentials = { data: []};
 const checkForExistingCredentials = ({hostname}) => {
+  currentCredentials.hostname = hostname;
+  currentCredentials.data = [];
+
   const loginsRef = db.collection('users').doc(activeUser.uid)
   .collection('hosts').doc(hostname).collection('logins');
   loginsRef.get()
@@ -99,12 +109,20 @@ const checkForExistingCredentials = ({hostname}) => {
     snapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
       console.log(doc.id, " => ", doc.data());
+      currentCredentials.data.push(doc.data());
     });
   })
   .catch((error) => {
     console.error("Error writing document: ", error);
   });
+
+  if (currentCredentials.data.length > 0) {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+      showCredentialsDialog(tabs[0].id)
+    });
+  }
 }
+
 
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
@@ -117,6 +135,9 @@ chrome.runtime.onMessage.addListener(
         break;
       case PAGE_CONTAINS_LOGIN_EVENT:
         checkForExistingCredentials(request.data);
+        break;
+      case GET_CREDENTIALS:
+        sendResponse(currentCredentials.data);
         break;
       default:
         console.log(request.action)

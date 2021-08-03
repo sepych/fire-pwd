@@ -5,7 +5,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import {closeSaveDialog, saveCredentials} from "../actions";
+import {closeDialog, saveCredentials} from "../actions";
 
 const useStyles = makeStyles({
   root: {
@@ -18,7 +18,7 @@ export const SavePasswordDialog = () => {
 
   const close = () => {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      closeSaveDialog(tabs[0].id);
+      closeDialog(tabs[0].id);
     });
   }
 

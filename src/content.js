@@ -1,5 +1,11 @@
 import $ from 'jquery';
-import {CLOSE_SAVE_DIALOG, loginSubmitEvent, pageContainsLoginEvent, PROMPT_SAVE_DIALOG} from "./actions";
+import {
+  CLOSE_DIALOG, CREDENTIALS_VIEW,
+  loginSubmitEvent,
+  pageContainsLoginEvent,
+  SHOW_SAVE_DIALOG, SAVE_PASSWORD_VIEW,
+  SHOW_CREDENTIALS_DIALOG
+} from "./actions";
 
 const loginViews = [];
 $(document).ready(function () {
@@ -28,21 +34,30 @@ $(document).ready(function () {
 });
 
 let container = null;
+const removeContainer = () => {
+  if (container !== null) {
+    container.remove();
+  }
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === PROMPT_SAVE_DIALOG) {
-    if (container !== null) {
-      container.remove();
-    }
-
-    container = document.createElement("iframe");
-    container.src = chrome.runtime.getURL('index.html#dialog');
-    container.style.cssText = 'border:none; width:350px; height: 300px; position:fixed; top:0; left:0; z-index:9999999999;';
-    document.body.appendChild(container);
-
-    console.log(request)
-  } else if (request.action === CLOSE_SAVE_DIALOG) {
-    if (container !== null) {
-      container.remove();
-    }
+  switch (request.action) {
+    case CLOSE_DIALOG:
+      removeContainer();
+      break;
+    case SHOW_SAVE_DIALOG:
+      removeContainer();
+      container = document.createElement("iframe");
+      container.src = chrome.runtime.getURL('index.html' + SAVE_PASSWORD_VIEW);
+      container.style.cssText = 'border:none; width:350px; height: 300px; position:fixed; top:0; left:0; z-index:9999999999;';
+      document.body.appendChild(container);
+      break;
+    case SHOW_CREDENTIALS_DIALOG:
+      removeContainer();
+      container = document.createElement("iframe");
+      container.src = chrome.runtime.getURL('index.html' + CREDENTIALS_VIEW);
+      container.style.cssText = 'border:none; width:350px; position:fixed; top:0; left:0; z-index:9999999999;';
+      document.body.appendChild(container);
+      break;
   }
 });
