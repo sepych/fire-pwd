@@ -2,7 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore';
 import {config} from "./config";
-import {LOGIN_SUBMIT_EVENT, promptSaveDialog, SAVE_CREDENTIALS} from "./actions";
+import {LOGIN_SUBMIT_EVENT, PAGE_CONTAINS_LOGIN_EVENT, promptSaveDialog, SAVE_CREDENTIALS} from "./actions";
 
 import AES from 'crypto-js/aes';
 
@@ -91,6 +91,21 @@ const saveCredentials = () => {
   });
 }
 
+const checkForExistingCredentials = ({hostname}) => {
+  const loginsRef = db.collection('users').doc(activeUser.uid)
+  .collection('hosts').doc(hostname).collection('logins');
+  loginsRef.get()
+  .then((snapshot) => {
+    snapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+    });
+  })
+  .catch((error) => {
+    console.error("Error writing document: ", error);
+  });
+}
+
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     switch (request.action) {
@@ -98,8 +113,10 @@ chrome.runtime.onMessage.addListener(
         onLoginSubmit(request.data);
         break;
       case SAVE_CREDENTIALS:
-        console.log(SAVE_CREDENTIALS)
         saveCredentials();
+        break;
+      case PAGE_CONTAINS_LOGIN_EVENT:
+        checkForExistingCredentials(request.data);
         break;
       default:
         console.log(request.action)

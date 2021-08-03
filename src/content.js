@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {CLOSE_SAVE_DIALOG, loginSubmitEvent, PROMPT_SAVE_DIALOG} from "./actions";
+import {CLOSE_SAVE_DIALOG, loginSubmitEvent, pageContainsLoginEvent, PROMPT_SAVE_DIALOG} from "./actions";
 
 const loginViews = [];
 $(document).ready(function () {
@@ -22,6 +22,9 @@ $(document).ready(function () {
       loginViews.push(loginView);
     }
   });
+  if (loginViews.length > 0) {
+    pageContainsLoginEvent(window.location.hostname);
+  }
 });
 
 let container = null;
