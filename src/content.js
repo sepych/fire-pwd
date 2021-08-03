@@ -4,8 +4,10 @@ import {
   loginSubmitEvent,
   pageContainsLoginEvent,
   SHOW_SAVE_DIALOG, SAVE_PASSWORD_VIEW,
-  SHOW_CREDENTIALS_DIALOG
+  SHOW_CREDENTIALS_DIALOG,
+  CredentialsDialogStyle
 } from "./actions";
+
 
 const loginViews = [];
 $(document).ready(function () {
@@ -41,6 +43,7 @@ const removeContainer = () => {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('[content.js]', request);
   switch (request.action) {
     case CLOSE_DIALOG:
       removeContainer();
@@ -56,7 +59,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       removeContainer();
       container = document.createElement("iframe");
       container.src = chrome.runtime.getURL('index.html' + CREDENTIALS_VIEW);
-      container.style.cssText = 'border:none; width:350px; position:fixed; top:0; left:0; z-index:9999999999;';
+      const styleString = (
+        Object.entries(CredentialsDialogStyle).map(([k, v]) => `${k}:${v}`).join(';')
+      );
+      container.style.cssText = styleString; //'border:none; width:350px; height: 500px; position:fixed; top:0; left:0; z-index:9999999999;';
       document.body.appendChild(container);
       break;
   }

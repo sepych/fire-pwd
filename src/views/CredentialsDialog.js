@@ -1,22 +1,29 @@
 import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {closeDialog, getCredentials} from "../actions";
+import {closeDialog, CredentialsDialogStyle, getCredentials} from "../actions";
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SendIcon from '@material-ui/icons/Send';
+import {Card} from "@material-ui/core";
+import CardContent from "@material-ui/core/CardContent";
+
+
 
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345,
+    width: CredentialsDialogStyle.width,
+    height: CredentialsDialogStyle.height,
   },
 });
 
 export const CredentialsDialog = () => {
+  const classes = useStyles();
   const [credentials, setCredentials] = useState([]);
+
   useEffect(() => {
     getCredentials((response) => {
       setCredentials(response);
@@ -48,15 +55,19 @@ export const CredentialsDialog = () => {
   })
 
   return (
-    <List
-      component="nav"
-      subheader={
-        <ListSubheader component="div" id="nested-list-subheader">
-          Nested List Items
-        </ListSubheader>
-      }
-    >
-      {list}
-    </List>
+    <Card className={classes.root}>
+      <CardContent>
+        <List
+          component="nav"
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              Nested List Items
+            </ListSubheader>
+          }
+        >
+          {list}
+        </List>
+      </CardContent>
+    </Card>
   );
 }

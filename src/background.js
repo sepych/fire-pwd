@@ -111,21 +111,26 @@ const checkForExistingCredentials = ({hostname}) => {
       console.log(doc.id, " => ", doc.data());
       currentCredentials.data.push(doc.data());
     });
+
   })
   .catch((error) => {
     console.error("Error writing document: ", error);
-  });
+  })
+  .finally(() => {
+    if (currentCredentials.data.length > 0) {
+      chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        showCredentialsDialog(tabs[0].id);
+      });
+    }
+  })
 
-  if (currentCredentials.data.length > 0) {
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      showCredentialsDialog(tabs[0].id)
-    });
-  }
+
 }
 
 
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
+    console.log('[background.js]', request);
     switch (request.action) {
       case LOGIN_SUBMIT_EVENT:
         onLoginSubmit(request.data);
@@ -138,9 +143,6 @@ chrome.runtime.onMessage.addListener(
         break;
       case GET_CREDENTIALS:
         sendResponse(currentCredentials.data);
-        break;
-      default:
-        console.log(request.action)
         break;
     }
   }

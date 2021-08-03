@@ -7,8 +7,9 @@ import ReactDOM from 'react-dom';
 import {Landing} from "./views/Landing";
 import {TabSignIn} from "./views/TabSignIn";
 import {Main} from "./views/Main";
-import {closeDialog, CREDENTIALS_VIEW, LOGIN_VIEW, SAVE_PASSWORD_VIEW} from "./actions";
+import {CREDENTIALS_VIEW, LOGIN_VIEW, SAVE_PASSWORD_VIEW} from "./actions";
 import {SavePasswordDialog} from "./views/SavePasswordDialog";
+import {CredentialsDialog} from "./views/CredentialsDialog";
 
 
 firebase.initializeApp(config);
@@ -54,7 +55,7 @@ const App = () => {
       case SAVE_PASSWORD_VIEW:
         return <SavePasswordDialog></SavePasswordDialog>;
       case CREDENTIALS_VIEW:
-        return <SavePasswordDialog></SavePasswordDialog>;
+        return <CredentialsDialog></CredentialsDialog>;
       default:
         return <Main user={user}></Main>;
     }

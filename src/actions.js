@@ -2,6 +2,15 @@
 export const LOGIN_VIEW = '#login';
 export const SAVE_PASSWORD_VIEW = '#save_password_dialog';
 export const CREDENTIALS_VIEW = '#credentials_dialog';
+export const CredentialsDialogStyle = {
+  width: '345px',
+  height: '500px',
+  border: 'none',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  'z-index': 9999999999
+};
 
 //requests and events
 export const SHOW_SAVE_DIALOG = 'showSaveDialog';
