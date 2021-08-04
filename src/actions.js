@@ -28,6 +28,7 @@ export const CLOSE_DIALOG = 'closeDialog';
 export const SAVE_CREDENTIALS = 'saveCredentials';
 export const GET_CREDENTIALS = 'getCredentials';
 export const GET_SUBMIT_LOGIN = 'getSubmitLogin';
+export const GET_SECRET_KEY = 'getSecretKey';
 export const LOGIN_SUBMIT_EVENT = 'loginSubmit';
 export const PAGE_CONTAINS_LOGIN_EVENT = 'pageContainsLoginEvent';
 
@@ -40,6 +41,12 @@ export const getCredentials = (responseCallback) => {
 export const getSubmitLogin = (responseCallback) => {
   chrome.runtime.sendMessage({
     action: GET_SUBMIT_LOGIN,
+  }, responseCallback);
+}
+
+export const getSecretKey = (responseCallback) => {
+  chrome.runtime.sendMessage({
+    action: GET_SECRET_KEY,
   }, responseCallback);
 }
 

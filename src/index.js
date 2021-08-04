@@ -23,14 +23,6 @@ const App = () => {
       setUser(authUser);
     });
 
-    if (window.location.hash == LOGIN_VIEW) {
-      if (!user) {
-        // start login process automatically
-        const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(googleAuthProvider);
-      }
-    }
-
     return () => {
       // unsubscribe during unmount
       observer();
@@ -43,7 +35,7 @@ const App = () => {
       return <div/>;
     } else {
       if (window.location.hash === LOGIN_VIEW) {
-        return <TabSignIn/>;
+        return <TabSignIn user={null}/>;
       } else {
         return <Landing/>;
       }
@@ -51,7 +43,7 @@ const App = () => {
   } else {
     switch (window.location.hash) {
       case LOGIN_VIEW: //user logged in
-        return <div/>;
+        return <TabSignIn user={user}/>;
       case SAVE_PASSWORD_VIEW:
         return <SavePasswordDialog></SavePasswordDialog>;
       case CREDENTIALS_VIEW:

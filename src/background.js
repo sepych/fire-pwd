@@ -7,7 +7,7 @@ import {
   PAGE_CONTAINS_LOGIN_EVENT,
   showSaveDialog,
   SAVE_CREDENTIALS,
-  GET_CREDENTIALS, showCredentialsDialog, GET_SUBMIT_LOGIN
+  GET_CREDENTIALS, showCredentialsDialog, GET_SUBMIT_LOGIN, GET_SECRET_KEY
 } from "./actions";
 
 import AES from 'crypto-js/aes';
@@ -64,12 +64,11 @@ const db = firebase.firestore(app);
 
 window.onload = function () {
   firebase.auth().onAuthStateChanged(function (user) {
-    if (activeUser === null && user && activeTabId !== null) {
-      chrome.tabs.update(activeTabId, {highlighted: true});
-      chrome.tabs.remove(extensionTabId);
-    }
+    // if (activeUser === null && user && activeTabId !== null) {
+    //   chrome.tabs.update(activeTabId, {highlighted: true});
+    // }
+    // chrome.tabs.remove(extensionTabId);
     activeUser = user;
-    chrome.runtime.sendMessage({context: "user", data: activeUser});
   });
 };
 
@@ -149,6 +148,14 @@ chrome.runtime.onMessage.addListener(
           login: loginCredentials.login,
           password: loginCredentials.password.replace(/./g, '*')
         })
+        break;
+      case GET_SECRET_KEY:
+        if (activeUser) {
+          const key = sessionStorage.getItem(activeUser.uid);
+          sendResponse({ secretKey: key });
+        } else {
+          sendResponse({ secretKey: null });
+        }
         break;
     }
   }
