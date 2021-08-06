@@ -5,9 +5,11 @@ import Box from '@material-ui/core/Box';
 import Button from "@material-ui/core/Button";
 import firebase from "firebase";
 import 'firebase/auth';
+import {setSecretKey} from "../actions";
 
 export const Main = (props) => {
   const signOut = () => {
+    setSecretKey(null);
     firebase.auth().signOut();
   }
 

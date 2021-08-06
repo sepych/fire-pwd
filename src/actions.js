@@ -29,8 +29,10 @@ export const SAVE_CREDENTIALS = 'saveCredentials';
 export const GET_CREDENTIALS = 'getCredentials';
 export const GET_SUBMIT_LOGIN = 'getSubmitLogin';
 export const GET_SECRET_KEY = 'getSecretKey';
+export const SET_SECRET_KEY = 'setSecretKey';
 export const LOGIN_SUBMIT_EVENT = 'loginSubmit';
 export const PAGE_CONTAINS_LOGIN_EVENT = 'pageContainsLoginEvent';
+export const SIGN_IN_EVENT = 'signInEvent';
 
 export const getCredentials = (responseCallback) => {
   chrome.runtime.sendMessage({
@@ -48,6 +50,15 @@ export const getSecretKey = (responseCallback) => {
   chrome.runtime.sendMessage({
     action: GET_SECRET_KEY,
   }, responseCallback);
+}
+
+export const setSecretKey = (key) => {
+  chrome.runtime.sendMessage({
+    action: SET_SECRET_KEY,
+    data: {
+      secretKey: key,
+    }
+  });
 }
 
 export const loginSubmitEvent = (hostname, login, password) => {
@@ -91,5 +102,11 @@ export const closeDialog = (tabId) => {
 export const saveCredentials = () => {
   chrome.runtime.sendMessage({
     action: SAVE_CREDENTIALS,
+  });
+}
+
+export const signInEvent = () => {
+  chrome.runtime.sendMessage({
+    action: SIGN_IN_EVENT,
   });
 }

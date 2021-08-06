@@ -7,10 +7,12 @@ import {
   PAGE_CONTAINS_LOGIN_EVENT,
   showSaveDialog,
   SAVE_CREDENTIALS,
-  GET_CREDENTIALS, showCredentialsDialog, GET_SUBMIT_LOGIN, GET_SECRET_KEY
+  GET_CREDENTIALS, showCredentialsDialog, GET_SUBMIT_LOGIN, GET_SECRET_KEY, SET_SECRET_KEY, SIGN_IN_EVENT
 } from "./actions";
 
 import AES from 'crypto-js/aes';
+import sha256 from 'crypto-js/sha256';
+import enc from 'crypto-js/enc-utf8';
 
 let activeTabId = null;
 let extensionTabId = null;
@@ -72,11 +74,36 @@ window.onload = function () {
   });
 };
 
+const returnToPreviousTab = () => {
+  if (activeTabId !== null) {
+    chrome.tabs.update(activeTabId, {highlighted: true});
+  }
+  if (extensionTabId !== null) {
+    chrome.tabs.remove(extensionTabId);
+  }
+}
+
 let loginCredentials = null;
 const onLoginSubmit = ({hostname, login, password}) => {
   console.log(hostname, login, password)
-  loginCredentials = {hostname, login, password};
-  promptSavePassword = true;
+
+  let savedPassword = null;
+  const savedCredentials = currentCredentials.data.find((item) => {
+    if (item.hostname === hostname && item.login === login) {
+      return true;
+    }
+    return false;
+  });
+  if (savedCredentials) {
+    const key = localStorage.getItem(activeUser.uid);
+    savedPassword = AES.decrypt(savedCredentials.password, key).toString(enc);
+  }
+
+  console.log('previously saved password', savedPassword)
+  if (savedPassword !== password) {
+    loginCredentials = {hostname, login, password};
+    promptSavePassword = true;
+  }
 }
 
 const saveCredentials = () => {
@@ -84,10 +111,12 @@ const saveCredentials = () => {
   .collection('hosts').doc(loginCredentials.hostname).collection('logins')
   .doc(loginCredentials.login);
 
+  const key = localStorage.getItem(activeUser.uid);
+
   passwordRef.set({
     hostname: loginCredentials.hostname,
     login: loginCredentials.login,
-    password: AES.encrypt(loginCredentials.password, 'secret key 123').toString()
+    password: AES.encrypt(loginCredentials.password, key).toString()
   }).then(() => {
     console.log("Document successfully written!");
   })
@@ -96,7 +125,7 @@ const saveCredentials = () => {
   });
 }
 
-let currentCredentials = { data: []};
+let currentCredentials = {data: []};
 const checkForExistingCredentials = ({hostname}) => {
   currentCredentials.hostname = hostname;
   currentCredentials.data = [];
@@ -110,7 +139,6 @@ const checkForExistingCredentials = ({hostname}) => {
       console.log(doc.id, " => ", doc.data());
       currentCredentials.data.push(doc.data());
     });
-
   })
   .catch((error) => {
     console.error("Error writing document: ", error);
@@ -122,8 +150,6 @@ const checkForExistingCredentials = ({hostname}) => {
       });
     }
   })
-
-
 }
 
 
@@ -151,11 +177,24 @@ chrome.runtime.onMessage.addListener(
         break;
       case GET_SECRET_KEY:
         if (activeUser) {
-          const key = sessionStorage.getItem(activeUser.uid);
-          sendResponse({ secretKey: key });
+          const key = localStorage.getItem(activeUser.uid);
+          sendResponse({secretKey: key});
         } else {
-          sendResponse({ secretKey: null });
+          sendResponse({secretKey: null});
         }
+        break;
+      case SET_SECRET_KEY:
+        if (activeUser) {
+          if (request.data.secretKey) {
+            const hashDigest = sha256(request.data.secretKey);
+            localStorage.setItem(activeUser.uid, hashDigest.toString());
+          } else {
+            localStorage.setItem(activeUser.uid, null);
+          }
+        }
+        break;
+      case SIGN_IN_EVENT:
+        returnToPreviousTab();
         break;
     }
   }
