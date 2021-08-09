@@ -33,6 +33,18 @@ export const SET_SECRET_KEY = 'setSecretKey';
 export const LOGIN_SUBMIT_EVENT = 'loginSubmit';
 export const PAGE_CONTAINS_LOGIN_EVENT = 'pageContainsLoginEvent';
 export const SIGN_IN_EVENT = 'signInEvent';
+export const GET_DECRYPTED_PASSWORD = 'getDecryptedPassword';
+export const SUBMIT_AUTOLOGIN = 'submitAutologin';
+
+
+export const getDecryptedPassword = (encryptedPassword, responseCallback) => {
+  chrome.runtime.sendMessage({
+    action: GET_DECRYPTED_PASSWORD,
+    data: {
+      encryptedPassword: encryptedPassword,
+    }
+  }, responseCallback);
+}
 
 export const getCredentials = (responseCallback) => {
   chrome.runtime.sendMessage({
@@ -96,6 +108,16 @@ export const showCredentialsDialog = (tabId) => {
 export const closeDialog = (tabId) => {
   chrome.tabs.sendMessage(tabId, {
     action: CLOSE_DIALOG,
+  });
+}
+
+export const submitAutologin = (tabId, login, password) => {
+  chrome.tabs.sendMessage(tabId, {
+    action: SUBMIT_AUTOLOGIN,
+    data: {
+      login: login,
+      password: password
+    }
   });
 }
 

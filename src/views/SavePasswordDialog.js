@@ -1,6 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import Typography from '@material-ui/core/Typography';
-import {closeDialog, CredentialsDialogStyle, getSubmitLogin, saveCredentials} from "../actions";
+import {
+  closeDialog,
+  getSubmitLogin,
+  saveCredentials,
+  SavePasswordDialogStyle
+} from "../actions";
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import {styled, withStyles} from "@material-ui/core";
@@ -11,7 +16,7 @@ import {DialogTitle} from "../components/DialogTitle";
 import {Credentials} from "../components/Credentials";
 
 export const DialogCard = styled(MyCard)({
-  width: CredentialsDialogStyle.width,
+  width: SavePasswordDialogStyle.width,
 });
 
 const DialogContent = withStyles((theme) => ({

@@ -5,7 +5,7 @@ import {
   pageContainsLoginEvent,
   SHOW_SAVE_DIALOG, SAVE_PASSWORD_VIEW,
   SHOW_CREDENTIALS_DIALOG,
-  CredentialsDialogStyle, SavePasswordDialogStyle
+  CredentialsDialogStyle, SavePasswordDialogStyle, SUBMIT_AUTOLOGIN
 } from "./actions";
 
 
@@ -34,6 +34,13 @@ $(document).ready(function () {
     pageContainsLoginEvent(window.location.hostname);
   }
 });
+
+const submitLogin = (login, password) => {
+  loginViews.forEach((item) => {
+    item.login.val(login);
+    item.password.val(password);
+  })
+}
 
 let container = null;
 const removeContainer = () => {
@@ -65,6 +72,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       container.src = chrome.runtime.getURL('index.html' + CREDENTIALS_VIEW);
       container.style.cssText = getTextStyle(CredentialsDialogStyle);
       document.body.appendChild(container);
+      break;
+    case SUBMIT_AUTOLOGIN:
+      submitLogin(request.data.login, request.data.password);
       break;
   }
 });

@@ -7,7 +7,13 @@ import {
   PAGE_CONTAINS_LOGIN_EVENT,
   showSaveDialog,
   SAVE_CREDENTIALS,
-  GET_CREDENTIALS, showCredentialsDialog, GET_SUBMIT_LOGIN, GET_SECRET_KEY, SET_SECRET_KEY, SIGN_IN_EVENT
+  GET_CREDENTIALS,
+  showCredentialsDialog,
+  GET_SUBMIT_LOGIN,
+  GET_SECRET_KEY,
+  SET_SECRET_KEY,
+  SIGN_IN_EVENT,
+  GET_DECRYPTED_PASSWORD
 } from "./actions";
 
 import AES from 'crypto-js/aes';
@@ -195,6 +201,13 @@ chrome.runtime.onMessage.addListener(
         break;
       case SIGN_IN_EVENT:
         returnToPreviousTab();
+        break;
+      case GET_DECRYPTED_PASSWORD:
+        if (activeUser) {
+          const key = localStorage.getItem(activeUser.uid);
+          const password = AES.decrypt(request.data.encryptedPassword, key).toString(enc);
+          sendResponse({password: password});
+        }
         break;
     }
   }

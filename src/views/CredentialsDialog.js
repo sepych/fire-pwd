@@ -1,27 +1,31 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import {closeDialog, CredentialsDialogStyle, getCredentials} from "../actions";
-import ListSubheader from '@material-ui/core/ListSubheader';
+import {closeDialog, CredentialsDialogStyle, getCredentials, getDecryptedPassword, submitAutologin} from "../actions";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import SendIcon from '@material-ui/icons/Send';
-import {Card} from "@material-ui/core";
-import CardContent from "@material-ui/core/CardContent";
+import {styled, withStyles} from "@material-ui/core";
+import {DialogTitle} from "../components/DialogTitle";
+import {MyCard} from "../components/MyCard";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import VpnKeyTwoToneIcon from '@material-ui/icons/VpnKeyTwoTone';
 
+export const DialogCard = styled(MyCard)({
+  width: CredentialsDialogStyle.width,
+  height: CredentialsDialogStyle.height,
+});
 
-
-
-const useStyles = makeStyles({
+const DialogContent = withStyles((theme) => ({
   root: {
-    width: CredentialsDialogStyle.width,
-    height: CredentialsDialogStyle.height,
+    padding: theme.spacing(1),
   },
+}))(MuiDialogContent);
+
+const CredentialsIcon = styled(VpnKeyTwoToneIcon)({
+  color: '#f73b7d',
 });
 
 export const CredentialsDialog = () => {
-  const classes = useStyles();
   const [credentials, setCredentials] = useState([]);
 
   useEffect(() => {
@@ -30,7 +34,6 @@ export const CredentialsDialog = () => {
     });
   }, []);
 
-
   const close = () => {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       closeDialog(tabs[0].id);
@@ -38,7 +41,12 @@ export const CredentialsDialog = () => {
   }
 
   const loginSelected = (details) => {
-    console.log(details)
+    getDecryptedPassword(details.password, (response) => {
+      chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        submitAutologin(tabs[0].id, details.login, response.password)
+        closeDialog(tabs[0].id);
+      });
+    });
   }
 
   const list = credentials.map((item) => {
@@ -47,27 +55,25 @@ export const CredentialsDialog = () => {
         loginSelected(item);
       }}>
         <ListItemIcon>
-          <SendIcon/>
+          <CredentialsIcon/>
         </ListItemIcon>
-        <ListItemText primary={item.login}/>
+        <ListItemText primary={item.login} secondary={'****************'}/>
       </ListItem>
     );
   })
 
   return (
-    <Card className={classes.root}>
-      <CardContent>
+    <DialogCard>
+      <DialogTitle onClose={close}>
+        Credentials
+      </DialogTitle>
+      <DialogContent>
         <List
           component="nav"
-          subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-              Nested List Items
-            </ListSubheader>
-          }
         >
           {list}
         </List>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </DialogCard>
   );
 }
