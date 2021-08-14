@@ -17,10 +17,12 @@ $(document).ready(function () {
   possibleLoginForms.each(function () {
     const passwords = $(this).find('input[type=password]');
     const logins = $(this).find('input[type=text]');
+    const submitBtn = $(this).find(':submit');
 
     if (passwords.length === 1 && logins.length === 1) {
       const loginView = {
         form: $(this),
+        submitBtn: submitBtn.first(),
         login: logins.first(),
         password: passwords.first()
       }
@@ -36,10 +38,12 @@ $(document).ready(function () {
 });
 
 const submitLogin = (login, password) => {
-  loginViews.forEach((item) => {
-    item.login.val(login);
-    item.password.val(password);
-  })
+  if (loginViews.length > 0) {
+    loginViews[0].login.val(login);
+    loginViews[0].password.val(password);
+    loginViews[0].submitBtn.trigger( "click" );
+    //loginViews[0].form.submit();
+  }
 }
 
 let container = null;

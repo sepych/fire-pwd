@@ -9,12 +9,15 @@ import {LogoView} from "./LogoView";
 const styles = (theme) => ({
   root: {
     margin: 0,
-    padding: theme.spacing(1),
+    paddingLeft: theme.spacing(3),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    backgroundColor: theme.palette.grey[50]
   },
   closeButton: {
     position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
+    right: theme.spacing(2),
+    top: theme.spacing(2),
     color: theme.palette.grey[700],
   },
 });
