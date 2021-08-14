@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {closeDialog, CredentialsDialogStyle, getCredentials, getDecryptedPassword, submitAutologin} from "../actions";
+import {closeDialog, getCredentials, getDecryptedPassword, submitAutologin} from "../actions";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -11,8 +11,8 @@ import MuiDialogContent from "@material-ui/core/DialogContent";
 import VpnKeyTwoToneIcon from '@material-ui/icons/VpnKeyTwoTone';
 
 export const DialogCard = styled(MyCard)({
-  width: CredentialsDialogStyle.width,
-  height: CredentialsDialogStyle.height,
+  //width: CredentialsDialogStyle.width,
+  //height: CredentialsDialogStyle.height,
 });
 
 const DialogContent = withStyles((theme) => ({

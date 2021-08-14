@@ -1,10 +1,20 @@
-import {styled} from "@material-ui/core";
+import {withStyles} from "@material-ui/core";
 import MuiCard from "@material-ui/core/Card";
 import React from "react";
 
-export const MyCard = styled(MuiCard)({
-  // backgroundColor: '#fff4e7',
-  backgroundColor: '#fff',
-  color: '#000',
+
+const styles = (theme) => ({
+  root: {
+    margin: '10px',
+  },
+});
+
+export const MyCard = withStyles(styles)((props) => {
+  const {children, classes} = props;
+  return (
+    <MuiCard elevation={10} className={classes.root}>
+      {children}
+    </MuiCard>
+  );
 });
 

@@ -16,7 +16,7 @@ import {DialogTitle} from "../components/DialogTitle";
 import {Credentials} from "../components/Credentials";
 
 export const DialogCard = styled(MyCard)({
-  width: SavePasswordDialogStyle.width,
+  //width: SavePasswordDialogStyle.width,
 });
 
 const DialogContent = withStyles((theme) => ({
